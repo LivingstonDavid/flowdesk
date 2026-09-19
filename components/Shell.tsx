@@ -15,15 +15,15 @@ function Brand({ tag }: { tag: string }) {
   return (
     <Link href="/" className="brand">
       <span className="brand-mark"><Icon name="layers" size={15} /></span>
-      <span className="brand-name">Flowdesk</span>
-      <span className="brand-tag">{tag}</span>
+      <span className="brand-name fade">Flowdesk</span>
+      <span className="brand-tag fade">{tag}</span>
     </Link>
   );
 }
 
 function DatasetCard() {
   return (
-    <div className="side-dataset">
+    <div className="side-dataset fade">
       <div className="side-dataset-name">
         <Icon name="inbox" size={13} /> Nimbus CRM
       </div>
@@ -44,7 +44,7 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
           className={`side-link ${pathname.startsWith(t.href) ? "active" : ""}`}
         >
           <Icon name={t.icon} size={15} />
-          {t.label}
+          <span className="lbl">{t.label}</span>
         </Link>
       ))}
     </>
@@ -80,7 +80,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         </div>
         <div className="side-spacer" />
         <div className="side-badge" style={{ paddingTop: 14 }}>
-          <span className="pulse-dot" /> Synthetic data only
+          <span className="pulse-dot" /> <span className="lbl">Synthetic data only</span>
         </div>
       </div>
     </div>
@@ -92,21 +92,21 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <aside className="sidebar">
           <Brand tag="demo" />
           <div className="side-section">
-            <div className="side-label">Workspace</div>
+            <div className="side-label lbl">Workspace</div>
             <NavLinks pathname={pathname} />
           </div>
           <div className="side-section">
-            <div className="side-label">Dataset</div>
+            <div className="side-label lbl">Dataset</div>
             <DatasetCard />
           </div>
           <div className="side-spacer" />
           <div className="side-foot">
             <div className="side-badge">
-              <span className="pulse-dot" /> Synthetic data only
+              <span className="pulse-dot" /> <span className="lbl">Synthetic data only</span>
             </div>
             <div className="side-user">
               <span className="avatar sm">DA</span>
-              <span className="side-user-meta">
+              <span className="side-user-meta fade">
                 <span className="side-user-name">Demo Admin</span>
                 <span className="side-user-sub">portfolio build</span>
               </span>

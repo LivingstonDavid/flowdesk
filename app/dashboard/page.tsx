@@ -10,8 +10,8 @@ import Link from "next/link";
 const initials = (name: string) =>
   name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
 
-const DONUT_COLORS = ["#818cf8", "#22d3ee", "#34d399", "#fbbf24", "#f472b6", "#a78bfa", "#f87171", "#94a3b8", "#4ade80", "#fb923c"];
-const PRIO_COLORS: Record<string, string> = { P1: "#f87171", P2: "#fbbf24", P3: "#22d3ee", P4: "#39415a" };
+const DONUT_COLORS = ["#9a8fff", "#2dd4bf", "#34d399", "#fbbf24", "#f472b6", "#a78bfa", "#f87171", "#94a3b8", "#4ade80", "#fb923c"];
+const PRIO_COLORS: Record<string, string> = { P1: "#f87171", P2: "#fbbf24", P3: "#2dd4bf", P4: "#39415a" };
 
 // Pull a readable outcome out of a ticket's step results.
 function outcomeOf(r: TicketResult) {
@@ -138,7 +138,7 @@ export default function DashboardPage() {
           <div className="stat-top"><span className="stat-label">Replies auto-drafted</span><span className="stat-delta info">{((drafted / processed) * 100).toFixed(0)}% coverage</span></div>
           <div className="stat-value">{drafted}</div>
           <div className="stat-sub">ready for one-click agent review</div>
-          <Sparkline values={sparkVals.map((v) => (v * drafted) / processed)} stroke="#22d3ee" />
+          <Sparkline values={sparkVals.map((v) => (v * drafted) / processed)} stroke="#2dd4bf" />
         </div>
         <div className="stat-card panel">
           <div className="stat-top"><span className="stat-label">Escalated to Tier 2</span><span className="stat-delta up">{(avgConf * 100).toFixed(0)}% avg conf</span></div>
@@ -155,12 +155,12 @@ export default function DashboardPage() {
           <svg width="100%" height="120" viewBox="0 0 100 40" preserveAspectRatio="none">
             <defs>
               <linearGradient id="thru" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stopColor="#6366f1" stopOpacity="0.45" />
-                <stop offset="1" stopColor="#6366f1" stopOpacity="0.02" />
+                <stop offset="0" stopColor="#7c6cf5" stopOpacity="0.45" />
+                <stop offset="1" stopColor="#7c6cf5" stopOpacity="0.02" />
               </linearGradient>
             </defs>
             <path d={thruArea} fill="url(#thru)" />
-            <polyline points={thruLine} fill="none" stroke="#818cf8" strokeWidth="1.4" vectorEffect="non-scaling-stroke" />
+            <polyline points={thruLine} fill="none" stroke="#9a8fff" strokeWidth="1.4" vectorEffect="non-scaling-stroke" />
           </svg>
           <div className="progress-label" style={{ marginTop: 6 }}>
             <span>0s</span>
