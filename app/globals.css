@@ -678,3 +678,6 @@ h1, h2, h3, h4 { letter-spacing: -0.02em; }
   .hero h1 { font-size: 28px; }
   .metric-num { font-size: 20px; }
 }
+
+.dl-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.dash-table td.mono { white-space: nowrap; }
