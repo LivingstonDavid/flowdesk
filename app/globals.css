@@ -655,6 +655,8 @@ h1, h2, h3, h4 { letter-spacing: -0.02em; }
   /* run */
   .run-grid { grid-template-columns: 1fr; }
   .run-controls { flex-wrap: wrap; gap: 12px; padding: 12px 14px; }
+  .run-controls .btn:first-child { flex: 1 1 auto; justify-content: center; }
+  .run-progress { flex: 1 1 100%; order: 3; }
   .run-elapsed { min-width: 0; margin-left: auto; }
   .ticket-list-scroll { max-height: 320px; }
   .inspector { min-height: 0; padding: 16px; }
