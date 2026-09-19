@@ -10,7 +10,7 @@ import Link from "next/link";
 const initials = (name: string) =>
   name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
 
-const DONUT_COLORS = ["#818cf8", "#22d3ee", "#34d399", "#fbbf24", "#f472b6", "#a78bfa", "#f87171", "#94a3b8"];
+const DONUT_COLORS = ["#818cf8", "#22d3ee", "#34d399", "#fbbf24", "#f472b6", "#a78bfa", "#f87171", "#94a3b8", "#4ade80", "#fb923c"];
 const PRIO_COLORS: Record<string, string> = { P1: "#f87171", P2: "#fbbf24", P3: "#22d3ee", P4: "#39415a" };
 
 // Pull a readable outcome out of a ticket's step results.
@@ -191,7 +191,7 @@ export default function DashboardPage() {
               {donutSegs.slice(0, 5).map((s) => (
                 <div className="donut-legend-row" key={s.team}>
                   <span className="donut-swatch" style={{ background: s.color }} />
-                  {s.team}
+                  <span className="dl-name">{s.team}</span>
                   <span className="mono">{s.n}</span>
                 </div>
               ))}

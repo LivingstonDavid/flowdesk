@@ -524,7 +524,7 @@ h1, h2, h3, h4 { letter-spacing: -0.02em; }
 .stat-card { padding: 16px 18px; position: relative; overflow: hidden; }
 .stat-top { display: flex; align-items: center; justify-content: space-between; }
 .stat-label { font-size: 10.5px; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
-.stat-delta { font-size: 10.5px; font-weight: 700; font-family: var(--mono); padding: 2px 7px; border-radius: 999px; }
+.stat-delta { font-size: 10.5px; font-weight: 700; font-family: var(--mono); padding: 2px 7px; border-radius: 999px; white-space: nowrap; }
 .stat-delta.up { color: var(--green); background: var(--green-soft); }
 .stat-delta.info { color: var(--cyan); background: var(--cyan-soft); }
 .stat-value { font-size: 28px; font-weight: 760; margin-top: 9px; letter-spacing: -0.03em; }
@@ -603,3 +603,5 @@ h1, h2, h3, h4 { letter-spacing: -0.02em; }
   .hero h1 { font-size: 34px; }
   .metric-item { padding: 16px 22px; }
 }
+
+.dl-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
