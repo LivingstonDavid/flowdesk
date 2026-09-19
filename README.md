@@ -1,5 +1,7 @@
 # Flowdesk - Agentic ITSM Workflow Builder
 
+[![CI](https://github.com/LivingstonDavid/flowdesk/actions/workflows/ci.yml/badge.svg)](https://github.com/LivingstonDavid/flowdesk/actions/workflows/ci.yml)
+
 A visual workflow builder for support automation. Compose triage, priority-scoring,
 reply-drafting, routing and notification steps on a canvas, then run the workflow
 live over a queue of support tickets and watch it classify, draft, route and

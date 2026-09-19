@@ -1,0 +1,58 @@
+# CI - Continuous Integration
+#
+# What is this file?
+#   GitHub Actions reads every YAML file in .github/workflows/ and runs it
+#   automatically when the events under `on:` happen. This one is the safety
+#   net for the repo: every push and pull request to `main` gets installed,
+#   linted, typechecked and built on a clean machine, so "works on my laptop"
+#   mistakes get caught before they reach production (Vercel deploys main).
+#
+#   You can watch it run in the repo's "Actions" tab on GitHub.
+
+name: CI
+
+# When should this workflow run?
+on:
+  push:
+    branches: [main]        # every commit pushed to main
+  pull_request:
+    branches: [main]        # every PR opened/updated against main
+
+# What should it do?
+# A "job" is a group of steps that run together on one fresh virtual machine.
+jobs:
+  build:
+    runs-on: ubuntu-latest  # a clean Linux machine GitHub spins up per run
+
+    steps:
+      # 1. Download the repo's code onto that machine.
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      # 2. Install the same Node.js version we develop with, and cache
+      #    npm packages between runs so installs stay fast.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm        # keyed on package-lock.json
+
+      # 3. Install dependencies exactly as package-lock.json describes
+      #    (`npm ci` = clean install; reproducible, no surprise upgrades).
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Lint: catch style problems and common React/Next.js mistakes.
+      - name: Lint
+        run: npm run lint
+
+      # 5. Typecheck: ask TypeScript to verify every type without
+      #    emitting any files (`next build` would catch these too, but
+      #    this fails faster and with a clearer message).
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      # 6. Build: prove the app compiles for production end to end.
+      #    If this passes, Vercel's build will pass too.
+      - name: Build
+        run: npm run build
