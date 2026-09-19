@@ -625,7 +625,8 @@ h1, h2, h3, h4 { letter-spacing: -0.02em; }
   .mobile-topbar {
     display: flex; align-items: center; justify-content: space-between;
     height: 52px; box-sizing: border-box;
-    padding: 10px 14px; border-bottom: 1px solid var(--border-soft);
+    margin-left: -54px; width: calc(100% + 54px);
+    padding: 10px 14px 10px 14px; border-bottom: 1px solid var(--border-soft);
     position: sticky; top: 0; z-index: 60;
     background: rgba(8, 7, 13, 0.92); backdrop-filter: blur(12px);
   }
