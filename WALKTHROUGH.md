@@ -24,7 +24,7 @@ app/                      Next.js App Router pages (all client components)
 components/
   WorkflowProvider.tsx    App state: React context + localStorage
   Icon.tsx                Inline SVG icons (no emoji-font dependency)
-  Nav.tsx                 Top navigation
+  Shell.tsx                App shell: sidebar for app pages, top nav on landing
 lib/
   types.ts                Domain types: Workflow, Ticket, StepResult, ...
   steps.ts                The step palette: metadata + config fields per step type
