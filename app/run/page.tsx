@@ -7,7 +7,12 @@ import { StepResult, Ticket, TicketRunStatus } from "@/lib/types";
 import { useWorkflow } from "@/components/WorkflowProvider";
 import Icon from "@/components/Icon";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const initials = (name: string) =>
+  name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+
+const CHANNEL_ICON: Record<string, string> = { email: "mail", chat: "megaphone", portal: "globe", api: "cpu" };
 
 export default function RunPage() {
   const { workflow, setLastRun } = useWorkflow();
@@ -16,12 +21,21 @@ export default function RunPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [doneCount, setDoneCount] = useState(0);
-  const [activeStep, setActiveStep] = useState<string | null>(null);
+  const [elapsed, setElapsed] = useState(0);
   const runningRef = useRef(false);
+  const t0Ref = useRef(0);
+
+  useEffect(() => {
+    if (!running) return;
+    const id = setInterval(() => setElapsed(Date.now() - t0Ref.current), 100);
+    return () => clearInterval(id);
+  }, [running]);
 
   const startRun = async () => {
     if (runningRef.current) return;
     runningRef.current = true;
+    t0Ref.current = Date.now();
+    setElapsed(0);
     setRunning(true);
     setStatuses({});
     setResults({});
@@ -33,7 +47,6 @@ export default function RunPage() {
       onTicketStart: (t: Ticket) => {
         setStatuses((s) => ({ ...s, [t.id]: "running" }));
         setSelectedId(t.id);
-        setActiveStep(null);
       },
       onStepDone: (t: Ticket, r: StepResult) => {
         setResults((m) => ({ ...m, [t.id]: [...(m[t.id] ?? []), r] }));
@@ -45,6 +58,7 @@ export default function RunPage() {
       },
     });
     setLastRun(collected);
+    setElapsed(Date.now() - t0Ref.current);
     setRunning(false);
     runningRef.current = false;
   };
@@ -58,15 +72,24 @@ export default function RunPage() {
   return (
     <main className="page">
       <div className="page-head">
-        <h1 className="page-title">Live run</h1>
-        <p className="page-sub">
-          Dataset: <strong>{DATASET_NAME}</strong> ({TICKETS.length} tickets) - workflow: <strong>{workflow.name}</strong> ({workflow.steps.length} steps)
-        </p>
+        <div>
+          <h1 className="page-title">Live run</h1>
+          <p className="page-sub">
+            Dataset: <strong>{DATASET_NAME}</strong> ({TICKETS.length} tickets) · workflow: <strong>{workflow.name}</strong> ({workflow.steps.length} steps)
+          </p>
+        </div>
+        {finishedAll && <span className="chip ok"><Icon name="check" size={12} /> Run complete</span>}
       </div>
 
-      <div className="run-controls">
+      <div className="run-controls panel">
         <button className="btn" onClick={startRun} disabled={running || workflow.steps.length === 0}>
-          {running ? "Running…" : started ? "↻ Run again" : "▶ Run workflow"}
+          {running ? (
+            <><span className="spinner" style={{ border: "2px solid rgba(255,255,255,0.35)", borderTopColor: "#fff" }} /> Running…</>
+          ) : started ? (
+            <><Icon name="refresh" size={14} /> Run again</>
+          ) : (
+            <><Icon name="play" size={13} /> Run workflow</>
+          )}
         </button>
         <div className="run-progress">
           <div className="progress-track">
@@ -74,14 +97,15 @@ export default function RunPage() {
           </div>
           <div className="progress-label">
             <span>{doneCount} / {TICKETS.length} tickets processed</span>
-            <span>{finishedAll ? "run complete" : running ? activeStep ?? "processing…" : "idle"}</span>
+            <span>{finishedAll ? "run complete" : running ? "processing…" : "idle"}</span>
           </div>
         </div>
-        {finishedAll && <Link href="/dashboard" className="btn btn-ghost btn-sm">View dashboard →</Link>}
+        <span className="run-elapsed">{(elapsed / 1000).toFixed(1)}s</span>
+        {finishedAll && <Link href="/dashboard" className="btn btn-ghost btn-sm">View dashboard <Icon name="arrowRight" size={13} /></Link>}
       </div>
 
       <div className="run-grid">
-        <div className="ticket-list">
+        <div className="ticket-list panel">
           <div className="ticket-list-head">
             <span>Ticket queue</span>
             <span>{doneCount} done</span>
@@ -95,19 +119,22 @@ export default function RunPage() {
                   className={`ticket-row ${st} ${selectedId === t.id ? "selected" : ""}`}
                   onClick={() => setSelectedId(t.id)}
                 >
-                  <span className="ticket-id">{t.id}</span>
-                  <span className="ticket-subject">{t.subject}</span>
-                  <span className={`ticket-status st-${st}`}>{st === "done" ? "✓ done" : st}</span>
+                  <span className="avatar sm">{initials(t.customer)}</span>
+                  <span className="tr-main">
+                    <span className="tr-subject">{t.subject}</span>
+                    <span className="tr-meta">{t.id} · {t.customer} · {t.company}</span>
+                  </span>
+                  <span className={`status-pill st-${st}`}>{st === "done" ? "done" : st}</span>
                 </button>
               );
             })}
           </div>
         </div>
 
-        <div className="inspector">
+        <div className="inspector panel">
           {!selected && (
             <div className="inspector-empty">
-              <Icon name="ticket" size={40} />
+              <Icon name="ticket" size={38} />
               <p>Select a ticket to inspect it - or hit <strong>Run workflow</strong> and watch them process.</p>
             </div>
           )}
@@ -116,32 +143,52 @@ export default function RunPage() {
               <div className="insp-head">
                 <h2 className="insp-subject">{selected.subject}</h2>
                 <div className="insp-meta">
+                  <span className="chip"><Icon name={CHANNEL_ICON[selected.channel] ?? "mail"} size={11} /> {selected.channel}</span>
                   <span className="chip">{selected.customer} · {selected.company}</span>
-                  <span className="chip">{selected.channel}</span>
                   {selected.vip && <span className="chip vip">VIP</span>}
-                  {selected.sentiment !== "calm" && <span className="chip">{selected.sentiment}</span>}
+                  {selected.sentiment !== "calm" && <span className="chip p2">{selected.sentiment}</span>}
                   {selectedSteps.filter((s) => s.confidence).map((s) => {
                     const m = s.title.match(/^Classified: (.+)$/);
                     return m ? <span key={s.stepId} className="chip cat">{m[1]}</span> : null;
                   })}
                 </div>
               </div>
-              <div className="insp-body">{selected.body}</div>
-              <div className="step-results">
+              <div className="insp-body">
+                <span className="from-line">{selected.customer} &lt;{selected.company}&gt; · {new Date(selected.receivedAt).toUTCString().slice(0, 22)} UTC</span>
+                {selected.body}
+              </div>
+              <div className="timeline">
                 {selectedSteps.map((s) => (
-                  <div key={s.stepId} className="step-result">
-                    <div className="step-result-head">
-                      <span className="step-result-icon"><Icon name={STEP_META[s.stepType].icon} size={16} /></span>
-                      {s.title}
-                      <span className="step-result-time">{s.durationMs}ms</span>
+                  <div key={s.stepId} className="tl-item">
+                    <div className="tl-rail">
+                      <span className={`tile tile-${s.stepType}`} style={{ width: 26, height: 26 }}>
+                        <Icon name={STEP_META[s.stepType].icon} size={13} />
+                      </span>
                     </div>
-                    <div className={`step-result-detail ${s.stepType === "draft_reply" ? "reply" : ""}`}>{s.detail}</div>
-                    {s.confidence !== undefined && (
-                      <div className="conf-bar">
-                        <div className="conf-track"><div className="conf-fill" style={{ width: `${s.confidence * 100}%` }} /></div>
-                        <span className="conf-label">confidence {(s.confidence * 100).toFixed(0)}%</span>
+                    <div className="tl-card">
+                      <div className="tl-head">
+                        {s.title}
+                        <span className="tl-time">{s.durationMs}ms</span>
                       </div>
-                    )}
+                      {s.stepType === "draft_reply" ? (
+                        <div className="reply-card">
+                          <div className="reply-card-head">
+                            <Icon name="mail" size={12} />
+                            To: {selected.customer.split(" ")[0].toLowerCase()}@{selected.company.toLowerCase().replace(/[^a-z]/g, "")}.example
+                            <span className="chip">awaiting agent review</span>
+                          </div>
+                          <div className="reply-card-body">{s.detail}</div>
+                        </div>
+                      ) : (
+                        <div className="tl-detail">{s.detail}</div>
+                      )}
+                      {s.confidence !== undefined && (
+                        <div className="conf-bar">
+                          <div className="conf-track"><div className="conf-fill" style={{ width: `${s.confidence * 100}%` }} /></div>
+                          <span className="conf-label">confidence {(s.confidence * 100).toFixed(0)}%</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
                 {selectedStatus === "running" && selectedSteps.length < workflow.steps.length && (

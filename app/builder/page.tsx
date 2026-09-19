@@ -35,13 +35,16 @@ export default function BuilderPage() {
   return (
     <main className="page">
       <div className="page-head">
-        <h1 className="page-title">Workflow builder</h1>
-        <p className="page-sub">
-          Trigger: <strong>new ticket created</strong> - compose the steps every ticket should flow through. Drag from the palette or click +.
-        </p>
+        <div>
+          <h1 className="page-title">Workflow builder</h1>
+          <p className="page-sub">
+            Trigger: <strong>new ticket created</strong> - compose the steps every ticket flows through. Drag from the palette or click +.
+          </p>
+        </div>
+        <span className="chip"><span className="save-dot" /> Autosaved locally</span>
       </div>
       <div className="builder-grid">
-        <aside className="palette">
+        <aside className="palette panel">
           <h3>Step palette</h3>
           <p className="palette-hint">Drag onto the canvas, or click +</p>
           {STEP_CATALOG.map((s) => (
@@ -54,8 +57,10 @@ export default function BuilderPage() {
               role="button"
               tabIndex={0}
             >
-              <span className="pi"><Icon name={s.icon} /></span>
-              <span>
+              <span className={`tile tile-${s.type}`} style={{ width: 26, height: 26 }}>
+                <Icon name={s.icon} size={14} />
+              </span>
+              <span style={{ minWidth: 0 }}>
                 <div className="pn">{s.name}</div>
                 <div className="pb">{s.blurb}</div>
               </span>
@@ -76,11 +81,12 @@ export default function BuilderPage() {
           <div className="flow-rail">
             <div className="flow-node trigger">
               <div className="node-head">
-                <span className="node-icon"><Icon name="bolt" /></span>
-                <span>
+                <span className="tile tile-trigger"><Icon name="bolt" size={15} /></span>
+                <span className="node-titles">
                   <div className="node-title">New ticket created</div>
                   <div className="node-kind">Trigger - runs on every incoming ticket</div>
                 </span>
+                <span className="chip ok" style={{ marginLeft: "auto" }}>always on</span>
               </div>
             </div>
 
@@ -113,7 +119,8 @@ export default function BuilderPage() {
               aria-label="Workflow name"
             />
             <span className="builder-meta">
-              {workflow.steps.length} step{workflow.steps.length === 1 ? "" : "s"} - autosaved locally
+              <span className="save-dot" />
+              {workflow.steps.length} step{workflow.steps.length === 1 ? "" : "s"} · saved to this browser
             </span>
             <Link href="/dashboard" className="btn btn-ghost btn-sm">Dashboard</Link>
             <button
@@ -121,7 +128,7 @@ export default function BuilderPage() {
               disabled={workflow.steps.length === 0}
               onClick={() => router.push("/run")}
             >
-              Run workflow →
+              Run workflow <Icon name="arrowRight" size={14} />
             </button>
           </div>
         </section>
@@ -170,11 +177,11 @@ function StepNode({
       onDrop={(e) => onDrop(e, index)}
     >
       <div className="node-head">
-        <span className="node-grip" title="Drag to reorder">⠿</span>
-        <span className="node-icon"><Icon name={meta.icon} /></span>
-        <span>
+        <span className="node-grip" title="Drag to reorder"><Icon name="grip" size={15} /></span>
+        <span className={`tile tile-${step.type}`}><Icon name={meta.icon} size={15} /></span>
+        <span className="node-titles">
           <div className="node-title">{meta.name}</div>
-          <div className="node-kind">Step {index + 1}</div>
+          <div className="node-kind">Step {index + 1} of {total}</div>
         </span>
         <span className="node-actions">
           <button className="icon-btn" title="Move up" disabled={index === 0} onClick={() => onMove(step.id, -1)}>↑</button>
