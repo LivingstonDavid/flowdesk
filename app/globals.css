@@ -605,3 +605,5 @@ h1, h2, h3, h4 { letter-spacing: -0.02em; }
 }
 
 .dl-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+.dash-table td.mono { white-space: nowrap; }

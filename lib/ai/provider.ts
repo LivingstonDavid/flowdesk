@@ -45,14 +45,14 @@ const RULES: CategoryRule[] = [
     reasoning: "Authentication and sign-in language detected (login, lockout, reset).",
   },
   {
+    category: "Cancellation",
+    keywords: ["cancel", "in-house tool", "no further charges"],
+    reasoning: "Explicit cancellation intent detected.",
+  },
+  {
     category: "Billing",
     keywords: ["charged", "invoice", "refund", "billing", "proration", "upgrade", "pricing", "purchase", "plan"],
     reasoning: "Payment, invoice and plan-change terms detected.",
-  },
-  {
-    category: "Integration",
-    keywords: ["integration", "slack", "zapier", "salesforce", "webhook", "api", "sync", "hmac"],
-    reasoning: "References a third-party system or API surface.",
   },
   {
     category: "Performance",
@@ -60,9 +60,9 @@ const RULES: CategoryRule[] = [
     reasoning: "Latency / degraded-performance language detected.",
   },
   {
-    category: "Cancellation",
-    keywords: ["cancel", "in-house tool", "no further charges"],
-    reasoning: "Explicit cancellation intent detected.",
+    category: "Integration",
+    keywords: ["integration", "slack", "zapier", "salesforce", "webhook", "api", "sync", "hmac"],
+    reasoning: "References a third-party system or API surface.",
   },
   {
     category: "Feature Request",
@@ -126,7 +126,9 @@ export class MockAIProvider implements AIProvider {
   async classify(ticket: Ticket): Promise<Classification> {
     await sleep(280 + (hash(ticket.id) % 240)); // simulated model latency
     const text = `${ticket.subject} ${ticket.body}`.toLowerCase();
-    const rule = RULES.find((r) => r.keywords.some((k) => text.includes(k))) ?? FALLBACK;
+    const rule =
+      RULES.find((r) => r.keywords.some((k) => new RegExp(`\\b${k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(text))) ??
+      FALLBACK;
     const confidence = 0.72 + (hash(ticket.id + rule.category) % 25) / 100; // 0.72 - 0.96
     return { category: rule.category, confidence, reasoning: rule.reasoning };
   }
